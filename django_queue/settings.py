@@ -80,6 +80,7 @@ Q_CLUSTER = {
     'queue_limit': 50,
     'bulk': 10,
     'orm': 'default',
+    'max_attempts':5,
     'redis': False  # Disable Redis
 }
 
