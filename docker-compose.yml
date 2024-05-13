@@ -1,0 +1,47 @@
+version: '3.8'
+
+services:
+  webserver-django_queue:
+    container_name: webserver-django_queue
+    build: ./
+    command: sh -c "python manage.py runserver 0.0.0.0:8000"
+    volumes:
+      - ./:/usr/src/app/
+    ports:
+      - 8000:8000
+    depends_on:
+      - db-django_queue
+  
+  db-django_queue:
+    container_name: db-master-django_queue
+    image: postgres:14.7-alpine
+    volumes:
+      - pgdata:/var/lib/postgresql/data/
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=django_queue
+
+  pgadmin-django_queue:
+    container_name: pgadmin4-django_queue
+    image: dpage/pgadmin4
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@test.com
+      PGADMIN_DEFAULT_PASSWORD: root123
+    ports:
+      - "5051:80"
+
+  worker:
+    build: .
+    command: python manage.py qcluster
+    volumes:
+      - ./:/usr/src/app/
+    depends_on:
+      - db-django_queue
+
+volumes:
+  pgdata:
+  
